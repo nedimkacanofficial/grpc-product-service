@@ -1,0 +1,46 @@
+syntax = "proto3";
+option java_multiple_files=true;
+package com.ndmkcn.grpc;
+
+service DiscountService {
+  rpc getDiscount(DiscountRequest) returns (DiscountResponse);
+}
+// Bu bizim istek atarken gönderdiğimiz parametrelerimizdir karşı taraftaki serviz bunları karşılayacak.
+message DiscountRequest {
+  string code=1;
+  float price=2;
+  int64 externalCategoryId=3;
+}
+// Bu bizim istek atarken başarılı başarız dönen tüm sonuçlarımızdır.
+message DiscountResponse {
+  string code=1;
+  float newPrice=2;
+  float oldPrice=3;
+  Response response=4;
+}
+// Reponse dönen cevap herhangi bir sorun olması durumnda bu döner ama yukarıdaki Discount Respones sınıfı içinde döner.
+message Response {
+  bool statusCode=1;
+  string message=2;
+}
+// Burada messageler bizim classlarımıza karşılık geliyor servisler bizim iletişim kurulan angulardaki
+// bağlantı kurma işlemlerini yaptığımız servislerimize karşılık geliyor içinde tanımlı olan rpc ise bizim servisimiz
+// içindeki methodumuz ve tek bir istek gidiyor tek bir sonuç dönüyor eğer bunun dışında bir yapı söz konusu olsaydı
+// yani birden fazla gidip birden fazla dönen bir cevap olsaydı o zaman parametrelerin sol tarafına stream ifadesi
+// eklenir bu yani şu anlama geliyor bir akış olacak. aynı zamanda syntax ile proto dosyası olduğunu bu dosyada
+// proto syntaxını kullanacağımızı söyledik ve option ile bu dosyayı maven içinde protobuf pluginini build edince
+// oluşacak classlarda response ve request classlarımızı birbirinden ayırdık. Daha temiz ve düzgün bir class
+// yapısı kurduk. son olarak bu build işlemi yapıldıktan sonra target içindeki proto dosyalarının bulunanacağı dizini
+// belirten pathi verdik bu path altında proto dosyalarımızı görebiliriz target içinde.
+
+// ****** Önemli
+// Burada programı sağ taraftaki maven menüsünden önce lifeciyle bölümünde clean işlemini yapıyoruz daha sonra ise
+// install yapıyoruz bizim için target içinde gerekli dosyaları oluşturuyor.yani compile olan değil.
+// ****** Önemli
+// Son olarak bizim oluşan bu target içindeki jar dosyamızı pom xml içinde dependency olarak eklememiz lazım.
+
+//  <dependency>
+//    <groupId>com.grpc</groupId>
+//    <artifactId>product</artifactId>
+//    <version>0.0.1-SNAPSHOT</version>
+//  </dependency>
